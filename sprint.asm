@@ -1,7 +1,7 @@
 dochar: 
 	call cprint		; print character
 sprint:
-	lodsb
+	lodsb			; loads byte from source (si) into al
 	cmp al, 0		; if it's not zero, jump to dochar
 	jne dochar		
 	add byte [ypos], 1	; down one row
@@ -25,3 +25,6 @@ cprint:				; prints a character
 	stosw			; write attribute
 	add byte [xpos], 1	; advance to the right
 	ret
+
+xpos db 0
+ypos db 0
