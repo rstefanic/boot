@@ -20,3 +20,7 @@ hexloop:			; main loop
 	call sprint		; print our result to the screen
 
 	ret
+
+hexstr db '0123456789ABCDEF'
+outstr16 db '0000', 0
+reg16 dw 0
