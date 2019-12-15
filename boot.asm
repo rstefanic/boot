@@ -5,6 +5,7 @@ jmp main
 %include "bios_print.asm"
 %include "sprint.asm"
 %include "printreg16.asm"
+%include "clear_line.asm"
 
 main:
 	xor ax, ax		; Zero out ax
@@ -17,10 +18,11 @@ main:
 
 	cld			; clear direction
 
-	mov ax, 0xb800		; text video memory
+	mov ax, 0xb800		; test video memory
 	mov es, ax
 
 	mov si, msg
+	call clear_line
 	call sprint
 
 	mov ax, 0xb800		; video memory
@@ -28,22 +30,17 @@ main:
 	mov bx, 0x0000		; 'W'=57, attrib=0F
 	mov ax, [gs:bx]
 
+	call clear_line
 	mov word [reg16], ax	; look at the register
 	call printreg16
 
-hang:
-	jmp hang
+halt:
+	hlt
 
 ; ------------------------------------------------------------------------------
 ; Constants -- db = define bytes (8 bit) in NASM
 
-xpos db 0
-ypos db 0
-hexstr db '0123456789ABCDEF'
-outstr16 db '0000', 0
-reg16 dw 0
-msg	db 'Boot Successful.', 13, 10, 0
-nxt	db 'Now hanging...', 13, 10, 0		
+msg	db 'Boot Successful.', 0
 
 ; -----------------------------------------------------------------------------
 ; Fill in
