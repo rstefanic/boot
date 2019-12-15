@@ -7,7 +7,7 @@ clear_line:
 	mov byte [x_clear], 0		; back to the left
 	ret
 
-clear:					; prints a character
+clear:					; prints a space char at the current pos
 	mov al, 0x20
 	mov ah, 0x0F			; set the attribute of white on black
 	mov cx, ax			; save the attribute
