@@ -4,7 +4,7 @@ jmp main
 
 %include "bios_print.asm"
 %include "sprint.asm"
-%include "printreg16.asm"
+%include "print_reg16.asm"
 %include "clear_line.asm"
 
 main:
@@ -62,11 +62,22 @@ keyhandler:
 	call clear_line
 	mov ax, [port60]
 	mov word [reg16], ax	; look at the register
-				; reg16 is located in "printreg16.asm"
-	call printreg16
+				; reg16 is located in "print_reg16.asm"
+	call print_reg16
 
 keyhandle_done:
 	iret			; interrupt return
+
+; ------------------------------------------------------------------------------
+; General Descriptor Table
+
+gdt_info:
+	dw gdt_end - gdt - 1	; last byte in the General Descriptor Table
+	dd gdt			; start of the date
+
+gdt	dd 00 			; entry 0 is always unused
+flat	dd 0xff, 0xff, 0, 0, 0, 10010010b, 11001111b, 0
+gdt_end:
 
 ; ------------------------------------------------------------------------------
 ; Constants -- db = define bytes (8 bit) in NASM

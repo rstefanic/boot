@@ -1,4 +1,4 @@
-printreg16:			; our setup for creating our hex value
+print_reg16:			; our setup for creating our hex value
 	mov di, outstr16	; the template of the register we're reading 
 				; defined as '0x000' in boot.asm
 	mov ax, [reg16]
