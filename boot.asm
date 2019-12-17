@@ -70,6 +70,22 @@ keyhandle_done:
 
 ; ------------------------------------------------------------------------------
 ; General Descriptor Table
+;
+; A simple single descriptor table
+;
+; 0 lowest byte of Limit
+;	[P - Present (1 bit) = 1 means segment is in memory]
+; 1 next byte of Limit
+;	[DPL - Descriptor Privilege Level]
+; 2 lowest byte of Base Address
+;	[S - System (1 bit)]
+; 3 next byte of Base Address
+;	[Type (4 bits) = interpretation changes on S is set or not]
+; 4 third byte of Base Address
+;	[Type bit 3 - If high bit is 1, then it's a code segment; othwerise DS]
+; 5 Type Bit 2
+; 6 Type Bit 1
+; 7 Type Bit 0
 
 gdt_info:
 	dw gdt_end - gdt - 1	; last byte in the General Descriptor Table
