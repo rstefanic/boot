@@ -4,7 +4,7 @@ jmp main
 
 %include "bios_print.asm"
 %include "sprint.asm"
-%include "print_reg16.asm"
+%include "print_reg32.asm"
 %include "clear_line.asm"
 
 main:
@@ -79,9 +79,9 @@ keyhandler:
 
 	call clear_line
 	mov ax, [port60]
-	mov word [reg16], ax	; look at the register
+	mov word [reg32], ax	; look at the register
 				; reg16 is located in "print_reg16.asm"
-	call print_reg16
+	call print_reg32
 
 keyhandle_done:
 	iret			; interrupt return
