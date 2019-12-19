@@ -1,7 +1,8 @@
 dochar: 
 	call cprint		; print character
 sprint:
-	lodsb			; loads byte from source (si) into al
+	mov eax, [esi]		; character string into al
+	lea esi, [esi+1]
 	cmp al, 0		; if it's not zero, jump to dochar
 	jne dochar		
 	add byte [ypos], 1	; down one row
@@ -10,19 +11,19 @@ sprint:
 
 cprint:				; prints a character
 	mov ah, 0x0F		; set the attribute of white on black
-	mov cx, ax		; save the attribute
-	movzx ax, byte [ypos]	; shift positions
-	mov dx, 160		; 2 bytes for the char
-	mul dx			; for 80 col
-	movzx bx, byte [xpos]
-	shl bx, 1		; 2 for the skip attribute
+	mov ecx, eax		; save the attribute
+	movzx eax, byte [ypos]	; shift positions
+	mov edx, 160		; 2 bytes for the char
+	mul edx			; for 80 col
+	movzx ebx, byte [xpos]
+	shl ebx, 1		; 2 for the skip attribute
 
-	mov di, 0		; start of video memory
-	add di, ax		; add y offset
-	add di, bx		; add x offset
+	mov edi, 0xb8000	; start of video memory
+	add edi, eax		; add y offset
+	add edi, ebx		; add x offset
 
-	mov ax, cx		; restore attribute
-	stosw			; write attribute
+	mov eax, ecx		; restore attribute
+	mov word [ds:edi], ax
 	add byte [xpos], 1	; advance to the right
 	ret
 
