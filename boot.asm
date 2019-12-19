@@ -22,6 +22,7 @@ main:
 	mov es, ax
 
 	cli			; clear interrupts
+	push ds			; save real mode
 
 	mov bx, 0x09		; hardware interrupt number
 	shl bx, 2		; mutliply by 2 (shift left 2 bits)
@@ -30,15 +31,32 @@ main:
 	mov [gs:bx], word keyhandler
 	mov [gs:bx + 2], ds	; segment
 	
-	mov si, msg
+	mov si, msg		; load start message
 	call clear_line
-	call sprint
+	call sprint		; print start message
 
-	mov si, next
+	mov si, next		; load next message
 	call clear_line
-	call sprint
+	call sprint		; print next message
 
+	lgdt [gdt_info]		; load gdt register
+
+	mov eax, cr0		; check cr0 and or the value to
+	or al, 1		; 	sure we're in protected mode
+	mov cr0, eax		; set cr0 to switch into protected mode
+
+	mov bx, 0x08		; to select our first descriptor, we use
+	mov ds, bx		; 8h = 1000b as our offset because
+				; in protected mode, bits 3-15 in the segment
+				; register are an index into the descriptor
+				; table. That's why 0x08 gets us the first entry
+
+	and al, 0xFE		; set al to 1 to switch back into real mode
+	mov cr0, eax		; set cr0 to 1
+
+	pop ds			; get back to our old segment
 	sti			; set interrupt flag
+
 	jmp $			; loop forever
 
 keyhandler:
@@ -71,7 +89,8 @@ keyhandle_done:
 ; ------------------------------------------------------------------------------
 ; General Descriptor Table
 ;
-; A simple single descriptor table
+; A simple single descriptor table. The size is 1MB and
+; the base address is 0x0.
 ;
 ; 0 lowest byte of Limit
 ;	[P - Present (1 bit) = 1 means segment is in memory]
@@ -91,8 +110,8 @@ gdt_info:
 	dw gdt_end - gdt - 1	; last byte in the General Descriptor Table
 	dd gdt			; start of the date
 
-gdt	dd 00 			; entry 0 is always unused
-flat	dd 0xff, 0xff, 0, 0, 0, 10010010b, 11001111b, 0
+gdt		dd 0,0 		; entry 0 is always unused
+flatdesc	db 0xff, 0xff, 0, 0, 0, 10010010b, 11001111b, 0
 gdt_end:
 
 ; ------------------------------------------------------------------------------
